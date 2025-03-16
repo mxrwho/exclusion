@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disappearing Words</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 800px; margin: auto; }
+        .word-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+        .word { margin: 5px; padding: 5px 10px; border: 1px solid black; cursor: pointer; min-width: 80px; text-align: center; }
+        .hidden { visibility: hidden; }
+        .strikethrough { text-decoration: line-through; }
+        .next-btn { margin-top: 20px; padding: 10px 20px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Choose at least five words and/or phrases that for some reason resonate with you.</h2>
+        <div class="word-list" id="wordList"></div>
+        <button class="next-btn" id="nextBtn" onclick="showReflection()">Next</button>
+    </div>
+    
+    <script>
+        const words = ["accessible", "activism", "advocists", "advocacy", "advocate", "advocates", "affirming care", 
+  "all-inclusive", "allyship", "anti-racism", "antiracist", "assigned at birth", "assigned female at birth",
+  "assigned male at birth", "at risk", "barrier", "barriers", "belong", "bias", "biased", "biased toward",
+  "biases", "biases towards", "biologically female", "biologically male", "BIPOC", "Black", "breastfeed + people",
+  "breastfeed + person", "chestfeed + people", "chestfeed + person", "clean energy", "climate crisis", "climate science", 
+  "commercial sex worker", "community diversity", "community equity", "confirmation bias", "cultural competence", 
+  "cultural differences", "cultural heritage", "cultural sensitivity", "culturally appropriate", "culturally responsive", 
+  "DEI", "DEIA", "DEIAB", "DEIJ", "disabilities", "disability", "discriminated", "discrimination", "discriminatory", 
+  "disparity", "diverse", "diverse backgrounds", "diverse communities", "diverse community", "diverse group", "diverse groups", 
+  "diversified", "diversify", "diversifying", "diversity", "enhance the diversity", "enhancing diversity", "environmental quality", 
+  "equal opportunity", "equality", "equitable", "equitableness", "equity", "ethnicity", "excluded", "exclusion", "expression", "female", 
+  "females", "feminism", "fostering inclusivity", "GBV", "gender", "gender based", "gender based violence", "gender diversity", "gender identity", 
+  "gender ideology", "gender-affirming care", "genders", "Gulf of Mexico", "hate speech", "health disparity", "health equity", "hispanic minority", 
+  "historically", "identity", "immigrants", "implicit bias", "implicit biases", "inclusion", "inclusive", "inclusive leadership", "inclusiveness", 
+  "inclusivity", "increase diversity", "increase the diversity", "indigenous community", "inequalities", "inequality", "inequitable", "inequities", 
+  "inequity", "injustice", "institutional", "intersectional", "intersectionality", "key groups", "key people", "key populations", "Latinx", "LGBT", 
+  "LGBTQ", "marginalize", "marginalized", "men who have sex with men", "mental health", "minorities", "minority", "most risk", "MSM", "multicultural", 
+  "Mx", "Native American", "non-binary", "nonbinary", "oppression", "oppressive", "orientation", "people + uterus", "people-centered care", "person-centered", 
+  "person-centered care", "polarization", "political", "pollution", "pregnant people", "pregnant person", "pregnant persons", "prejudice", "privilege", "privileges", 
+  "promote diversity", "promoting diversity", "pronoun", "pronouns", "prostitute", "race", "race and ethnicity", "racial", "racial diversity", "racial identity", "racial inequality", 
+  "racial justice", "racially", "racism", "segregation", "sense of belonging", "sex", "sexual preferences", "sexuality", "social justice", "sociocultural", "socioeconomic", "status", 
+  "stereotype", "stereotypes", "systemic", "systemically", "they/them", "trans", "transgender", "transsexual", "trauma", "traumatic", "tribal", "unconscious bias", "underappreciated", 
+  "underprivileged", "underrepresentation", "underrepresented", "underserved", "undervalued", "victim", "victims", "vulnerable populations", "women", "women and underrepresented"];
+        
+        const sentences = {
+            "diversity": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
+            "equality": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
+            "diverse": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
+            "disability": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.", 
+            "disabilities": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
+            "diversifying": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
+            "diversify": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
+            "community": "Policies ensuring <span class='strikethrough'>equity and</span> quality in education lead to <span class='strikethrough'>a more just society</span> better academic results.",
+            "social justice": "Policies ensuring <span class='strikethrough'>equity and</span> quality in education lead to <span class='strikethrough'>a more just society</span> better academic results.",
+            "sociocultural": "Policies ensuring <span class='strikethrough'>equity and</span> quality in education lead to <span class='strikethrough'>a more just society</span> better academic results.",
+            "socioeconomic": "Policies ensuring <span class='strikethrough'>equity and</span> quality in education lead to <span class='strikethrough'>a more just society</span> better academic results.",
+            "climate change": "<span class='strikethrough'>Scientific research shows that climate change is affecting global weather patterns.</span>",
+            "environmental": "<span class='strikethrough'>Scientific research shows that climate change is affecting global weather patterns.</span>",
+            "pollution": "<span class='strikethrough'>Scientific research shows that climate change is affecting global weather patterns.</span>",
+            "clean": "<span class='strikethrough'>Scientific research shows that climate change is affecting global weather patterns.</span>",
+            "energy": "<span class='strikethrough'>Scientific research shows that climate change is affecting global weather patterns.</span>",
+            "bias": "Recognizing and addressing <span class='strikethrough'>biased</span> repeating patterns in decision-making leads to excellent <span class='strikethrough'>diversified</span> outcomes.",
+            "biases": "Recognizing and addressing <span class='strikethrough'>biased</span> repeating patterns in decision-making leads to excellent <span class='strikethrough'>diversified</span> outcomes.",
+            "biased": "Recognizing and addressing <span class='strikethrough'>biased</span> repeating patterns in decision-making leads to excellent <span class='strikethrough'>diversified</span> outcomes.",
+            "oppression": "Recognizing and addressing <span class='strikethrough'>biased</span> repeating patterns in decision-making leads to excellent <span class='strikethrough'>diversified</span> outcomes.",
+            "oppressive": "Recognizing and addressing <span class='strikethrough'>biased</span> repeating patterns in decision-making leads to excellent <span class='strikethrough'>diversified</span> outcomes.",
+            "gender": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "gender identity": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "non-binary": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "nonbinary": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "sex": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "sexual": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "sexuality": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "transsexual": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "transgender": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "prostitute": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "pronoun": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "pronouns": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "they/them": "Handling matters with respect <span class='strikethrough'>for people of any gender identity</span> is our priority.",
+            "privilege": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "minority": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "immigrants": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "prejudice": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "underrepresented":"<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "underprivileged": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "undervalued": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "multicultural": "<span class='strikethrough'>Understanding privilege helps us create more equitable communities.</span>",
+            "social justice": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "advocate": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "advocacy": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "polarization": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "political": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "discriminated": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "discrimination": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "discriminatory": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "inequality": "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
+            "LGBTQ": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "DEI": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "DEIA": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "DEIAB": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "DEIJ": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "Mx": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "GBV": "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
+            "oppression": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "identity": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "sociocultural": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "socioeconomic": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "race": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "racial": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "racism": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "cultural": "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "inclusion": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
+            "inclusive": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
+            "inclusiveness": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
+            "inclusivity": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
+            "belong": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
+            "orientation": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful."
+        };
+        
+        const selectedWords = new Set();
+        const wordListDiv = document.getElementById("wordList");
+        const nextBtn = document.getElementById("nextBtn");
+        
+        words.forEach(word => {
+            let wordElem = document.createElement("div");
+            wordElem.textContent = word;
+            wordElem.classList.add("word");
+            wordElem.onclick = function() {
+                if (!this.classList.contains("hidden")) {
+                    this.classList.add("hidden");
+                    selectedWords.add(word);
+                    if (selectedWords.size >= 5) {
+                        nextBtn.style.display = "block";
+                    }
+                }
+            };
+            wordListDiv.appendChild(wordElem);
+        });
+        
+        function showReflection() {
+            let reflectionHTML = `<h2>What would change if these words/phrases disappeared?</h2>`;
+            selectedWords.forEach(word => {
+                if (sentences[word]) {
+                    reflectionHTML += `<p>${sentences[word]}</p>`;
+                }
+            });
+            reflectionHTML += `<button class='next-btn' onclick='showFinalInfo()'>Next</button>`;
+            document.querySelector(".container").innerHTML = reflectionHTML;
+        }
+        
+        function showFinalInfo() {
+            document.querySelector(".container").innerHTML = `
+                <h2>This project is based on a New York Times article (March 11, 2025) about disappearing words in official texts.</h2>
+                <p>What does it mean to lose these words? How can we preserve them? Can we reinvent them?</p>
+                <p>Please share your thoughts:</p>
+                <textarea rows='4' cols='50'></textarea>
+                <br>
+                <button class='next-btn' onclick='submitResponse()'>Submit</button>
+            `;
+        }
+
+        function submitResponse() {
+            alert("Your response has been recorded!");
+        }
+    </script>
+</body>
+</html>

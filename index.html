@@ -10,6 +10,7 @@
         .word-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
         .word { margin: 5px; padding: 5px 10px; border: 1px solid black; cursor: pointer; min-width: 80px; text-align: center; }
         .hidden { visibility: hidden; }
+        .fade-in { opacity: 0; transition: opacity 2s ease-in; }
         .strikethrough { text-decoration: line-through; }
         .next-btn { margin-top: 20px; padding: 10px 20px; display: none; }
     </style>
@@ -46,7 +47,17 @@
   "stereotype", "stereotypes", "systemic", "systemically", "they/them", "trans", "transgender", "transsexual", "trauma", "traumatic", "tribal", "unconscious bias", "underappreciated", 
   "underprivileged", "underrepresentation", "underrepresented", "underserved", "undervalued", "victim", "victims", "vulnerable populations", "women", "women and underrepresented"];
         
-        const sentences = {
+      const relatedWords = {"diversity":["equality", "diverse", "disability", "disabilities", "diversifying", "diversify"],
+                              "equality": ["diversity", "equity", "inclusion", "justice"],
+                              "bias": ["biased", "biases", "implicit bias", "confirmation bias"],
+                              "gender": ["gender identity", "gender diversity", "gender-based violence", "non-binary"],
+                              "privilege": ["underprivileged", "inequality", "oppression"],
+                              "oppression": ["systemic", "marginalized", "discrimination"],
+                              "climate change": ["environmental", "pollution", "clean energy"],
+                              "social justice": ["equity", "advocacy", "allyship", "activism"]
+                             }; 
+        
+      const sentences = {
             "diversity": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
             "equality": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
             "diverse": "We are commited to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
@@ -119,7 +130,7 @@
             "inclusivity": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
             "belong": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful.",
             "orientation": "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful."
-        };
+        }; 
         
         const selectedWords = new Set();
         const wordListDiv = document.getElementById("wordList");
@@ -130,14 +141,26 @@
             wordElem.textContent = word;
             wordElem.classList.add("word");
             wordElem.onclick = function() {
-                if (!this.classList.contains("hidden")) {
-                    this.classList.add("hidden");
-                    selectedWords.add(word);
-                    if (selectedWords.size >= 5) {
-                        nextBtn.style.display = "block";
+    if (!this.classList.contains("hidden")) {
+        this.classList.add("hidden");
+        selectedWords.add(word);
+
+        // Find all words in the same group and hide them
+        Object.keys(relatedWords).forEach(groupWord => {
+            if (relatedWords[groupWord].includes(word) || groupWord === word) {
+                document.querySelectorAll(".word").forEach(elem => {
+                    if (elem.textContent === groupWord || relatedWords[groupWord].includes(elem.textContent)) {
+                        elem.classList.add("hidden");
                     }
-                }
-            };
+                });
+            }
+        });
+
+        if (selectedWords.size >= 5) {
+            nextBtn.style.display = "block";
+        }
+    }
+};
             wordListDiv.appendChild(wordElem);
         });
         
@@ -145,18 +168,23 @@
             let reflectionHTML = `<h2>What would change if these words/phrases disappeared?</h2>`;
             selectedWords.forEach(word => {
                 if (sentences[word]) {
-                    reflectionHTML += `<p>${sentences[word]}</p>`;
+                    reflectionHTML += `<p class='fade-in strikethrough'>${sentences[word]}</p>`;
                 }
             });
             reflectionHTML += `<button class='next-btn' onclick='showFinalInfo()'>Next</button>`;
             document.querySelector(".container").innerHTML = reflectionHTML;
+            
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(elem => {
+                    elem.style.opacity = 1;
+                });
+            }, 2000);
         }
         
         function showFinalInfo() {
             document.querySelector(".container").innerHTML = `
-                <h2>This project is based on a New York Times article (March 11, 2025) about disappearing words in official texts.</h2>
-                <p>What does it mean to lose these words? How can we preserve them? Can we reinvent them?</p>
-                <p>Please share your thoughts:</p>
+                <h2>Final Thoughts</h2>
+                <p>What does it mean to lose these words? How can we preserve them?</p>
                 <textarea rows='4' cols='50'></textarea>
                 <br>
                 <button class='next-btn' onclick='submitResponse()'>Submit</button>

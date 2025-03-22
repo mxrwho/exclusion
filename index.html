@@ -25,7 +25,7 @@
 </head>
 <body>
     <div class="container" id="mainContainer">
-        <h2>Choose at least five words and/or phrases that for some reason resonate with you.</h2>
+        <h2 style="font-family: 'Georgia', sans-serif;">Choose at least five words that resonate</h2>
         <div class="word-list" id="wordList"></div>
         <button class="next-btn" id="nextBtn" onclick="showReflection()">Next</button>
     </div>
@@ -92,7 +92,7 @@
                     this.classList.add("hidden");
                     selectedWords.add(word);
                     
-                    // Hide related words
+             
                     if (relatedWords[word]) {
                         relatedWords[word].forEach(relatedWord => {
                             document.querySelectorAll(".word").forEach(elem => {
@@ -113,7 +113,7 @@
         
         function showReflection() {
             let container = document.getElementById("mainContainer");
-            container.innerHTML = `<h2>What would change if these words/phrases disappeared?</h2><div id='sentencesContainer'></div>`;
+            container.innerHTML = `<h2 style="font-family: 'Georgia', sans-serif;">What would change if the words on the list disappeared?</h2><br><br><div id='sentencesContainer'></div>`;
             
             let sentencesContainer = document.getElementById("sentencesContainer");
             
@@ -129,7 +129,7 @@
             
             setTimeout(() => {
                  let explanation = document.createElement("p");
-        explanation.innerHTML = "On 7 March 2025, <i>The New York Times</i> published the article '<b>These Words Are Disappearing in the New Trump Administration</b>'. The words on the list in the previous page, the disappearing words, are those that were omitted or replaced in hundreds of federal government websites. <p>The examples above are fictional, but represent an actual shift in content.</p>";
+        explanation.innerHTML = "On 7 March 2025, <i>The New York Times</i> published the article '<a href='https://www.nytimes.com/interactive/2025/03/07/us/trump-federal-agencies-websites-words-dei.html' target='_blank'><b>These Words Are Disappearing in the New Trump Administration</b></a>'. The words on the list in the previous page, the disappearing words, are those that were omitted or replaced in hundreds of federal government websites. <p>The examples above are fictional, but represent an actual shift in content.</p>";
         explanation.style.opacity = "0";
         explanation.style.transition = "opacity 3s ease-in";
         explanation.style.marginTop = "40px";
@@ -145,29 +145,87 @@
         nextButton.onclick = showFinalInfo;
         nextButton.style.display = "block";
         sentencesContainer.appendChild(nextButton);
-    }, sentences.length * 2000 + 5000); // Add extra delay after explanation
+    }, sentences.length * 2000 + 5000); 
 }  
-        function showFinalInfo() {
+function showFinalInfo() {
     document.getElementById("mainContainer").innerHTML = `
-        <h2>Do we need this vocabulary?</h2><br> 
+        <h2 style="font-family: 'Georgia', sans-serif;">Do we need this vocabulary?</h2><br> 
         <b>Can we afford losing these words? What would it mean? Can we preserve them? Can we replace them?</b><br><br>
         <form id='responseForm'>
             <textarea id='responseInput' name='response' rows='4' cols='50' required></textarea>
             <br><br>
             <button type='submit' class='next-btn'>Submit</button>
         </form>
-    `; // Removed the misplaced semicolon and ensured correct template literal syntax
+        <button id='restartBtn' class='next-btn' style="margin-top: 20px; display: block;">Start Over</button>
+    `;
 
-    document.getElementById("responseForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-        const response = document.getElementById("responseInput").value;
-        console.log("User response:", response);
-        alert("Your response has been recorded!");
+    const responseForm = document.getElementById("responseForm");
+    const responseInput = document.getElementById("responseInput");
+    const restartBtn = document.getElementById("restartBtn");
+
+    const replacementPhrases = [
+        "Everything is fine. Just buy a car, a cell phone, and consume entertainment.",
+        "No need to worry. Just follow the trends and be happy.",
+        "Your opinions are noted. Keep on buying stuff you don't need.",
+        "You are safe. Keep quiet. Trust the system."
+    ];
+
+    let typingTimer;
+    let typingInterval;
+    let isReplacementShown = false;  
+    let strikethroughText = "";  
+    let replacementInterval;  
+
+    responseInput.addEventListener("input", function() {
+        if (isReplacementShown) return; 
+
+        clearTimeout(typingTimer);
+        clearInterval(typingInterval);
+
+        let userText = responseInput.value;
+        let currentIndex = 0;
+
+        setTimeout(() => {
+            typingInterval = setInterval(() => {
+                if (currentIndex < userText.length) {
+                    strikethroughText += `\u0336${userText[currentIndex]}`;
+                    responseInput.value = strikethroughText; 
+                    currentIndex++;
+                } else {
+                    clearInterval(typingInterval);
+                    setTimeout(() => {
+                        
+                        const replacementMessage = replacementPhrases[Math.floor(Math.random() * replacementPhrases.length)];
+                        responseInput.value = strikethroughText + "\n[System]: " + replacementMessage;
+                        isReplacementShown = true; 
+
+                        
+                        let replacementIndex = 0;
+                        replacementInterval = setInterval(() => {
+                            replacementIndex++;
+                            if (replacementIndex >= replacementPhrases.length) {
+                                replacementIndex = 0; 
+                            }
+
+                            
+                            responseInput.value = strikethroughText + "\n[System]: " + replacementPhrases[replacementIndex];
+                        }, 6000);  
+                    }, 6000); 
+                }
+            }, 100);
+        }, 2000); 
     });
+
+    restartBtn.addEventListener("click", function() {
+        clearInterval(replacementInterval); 
+        window.location.href = "index.html"; 
+    });
+
+    setTimeout(() => {
+        clearInterval(replacementInterval); 
+        window.location.href = "index.html"; 
+    }, 60000);
 }
-
-
-        
     </script>
 </body>
 </html>

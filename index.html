@@ -57,8 +57,11 @@
         
       const relatedWords = {"diversity":["equality", "diverse", "disability", "disabilities", "diversifying", "diversify"],
                               "equality": ["diversity", "equity", "inclusion", "justice"],
+                              "inclusion": ["disability", "discriminated", "discrimination"],
                               "bias": ["biased", "biases", "implicit bias", "confirmation bias"],
-                              "gender": ["gender identity", "gender diversity", "gender-based violence", "non-binary"],
+                              "identity": ["segregation", "sense of belonging", "intersectionality", "key groups", "key people"],
+                              "gender": ["gender identity", "gender diversity", "gender-based violence", "non-binary", "traumatic", "status"],
+                              "pronoun": ["underserved", "undervalued", "victim", "mental health", "minorities"],
                               "privilege": ["underprivileged", "inequality", "oppression"],
                               "oppression": ["systemic", "marginalized", "discrimination"],
                               "climate change": ["environmental", "pollution", "clean energy"],
@@ -68,15 +71,15 @@
       const sentences = [
             
             "We are committed to <span class='strikethrough'>promoting equality and diversity and</span> serving the public.",
-            "Policies ensuring <span class='strikethrough'>equity and</span> quality in education lead to <span class='strikethrough'>a more just society and</span> better academic results.",
-            "Scientific research shows that <span class='strikethrough'>climate change is</span> affecting global weather patterns.",
+            "Policies ensuring <span class='strikethrough'>equity</span> <span style='color: green;'>quality</span> in education lead to <span class='strikethrough'>a more just society and</span> better academic results.",
+            "<span class='strikethrough'>Scientific research shows that climate change is affecting global weather patterns.</span>",
             "Recognizing and addressing <span class='strikethrough'>bias</span> in decision-making leads to excellent <span class='strikethrough'>diversified</span> outcomes.",
             "Handling matters with respect for <span class='strikethrough'>people of any gender identity</span> is our priority.",
-            "Understanding <span class='strikethrough'>privilege</span> helps us create more equitable communities.",
-            "Advocating for <span class='strikethrough'>social justice</span> is essential for addressing systemic inequalities.",
+            "Understanding <span class='strikethrough'>privilege</span> helps us create more equitable <span style='color: green;'>efficient</span> communities.",
+            "<span class='strikethrough'>Advocating for social justice is essential for addressing systemic inequalities.</span>",
             "The rights of <span class='strikethrough'>LGBTQ</span> individuals should be protected in every society.",
-            "We are dedicated to avoiding past mistakes. History has shown that <span class='strikethrough'>oppression</span> leads to long-term societal harm.",
-            "Organizations that prioritize <span class='strikethrough'>inclusion</span> and transparency tend to be more successful."
+            "We are dedicated to avoiding past mistakes. <span class='strikethrough'>History has shown that oppression leads to long-term societal harm.</span>",
+            "Organizations that prioritize <span class='strikethrough'>inclusion and</span> transparency tend to be more successful."
         ];
         
          const selectedWords = new Set();
@@ -113,7 +116,7 @@
         
         function showReflection() {
             let container = document.getElementById("mainContainer");
-            container.innerHTML = `<h2 style="font-family: 'Georgia', sans-serif;">What would change if the words on the list disappeared?</h2><br><br><div id='sentencesContainer'></div>`;
+            container.innerHTML = `<h2 style="font-family: 'Georgia', sans-serif;">What happens when the vocabulary gained through sociopolitical struggle disappears?</h2><br><br><div id='sentencesContainer'></div>`;
             
             let sentencesContainer = document.getElementById("sentencesContainer");
             
@@ -129,7 +132,7 @@
             
             setTimeout(() => {
                  let explanation = document.createElement("p");
-        explanation.innerHTML = "On 7 March 2025, <i>The New York Times</i> published the article '<a href='https://www.nytimes.com/interactive/2025/03/07/us/trump-federal-agencies-websites-words-dei.html' target='_blank'><b>These Words Are Disappearing in the New Trump Administration</b></a>'. The words on the list in the previous page, the disappearing words, are those that were omitted or replaced in hundreds of federal government websites. <p>The examples above are fictional, but represent an actual shift in content.</p>";
+        explanation.innerHTML = "On 7 March 2025, <i>The New York Times</i> published the article '<a href='https://www.nytimes.com/interactive/2025/03/07/us/trump-federal-agencies-websites-words-dei.html' target='_blank'><b>These Words Are Disappearing in the New Trump Administration</b></a>'. The list in the previous page contains the words that were omitted or replaced in hundreds of federal government websites.<br> <p>The examples above are fictional, but represent an actual shift in content.</p>";
         explanation.style.opacity = "0";
         explanation.style.transition = "opacity 3s ease-in";
         explanation.style.marginTop = "40px";
